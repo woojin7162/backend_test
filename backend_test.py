@@ -5,6 +5,8 @@ import requests
 from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.date import DateTrigger
+from discord import Webhook, RequestsWebhookAdapter
+
 
 app = Flask(__name__)
 CORS(app)
@@ -126,6 +128,7 @@ def handle_shift():
         )
             
     msg_id = send_discord_message(msg)
+    
     delete_time = None
     if shift_type == "morning":
         delete_time = now.replace(hour=15, minute=30, second=0, microsecond=0)
@@ -202,7 +205,7 @@ def handle_shift():
                 schedule_alarm(end, f"포스 종료 교대 시간입니다! ({eh}:{em:02d}, 순번 {num})")
 
         # 분리수거/화장실청소 알림
-    if shift_order != '2':
+    if shift_order != '2' and shift_type == 'afternoon' :
         if task_type == 'recycling':
             t = now.replace(hour=20, minute=0, second=0, microsecond=0)
             schedule_alarm(t, "분리수거 시간입니다!")
@@ -212,8 +215,13 @@ def handle_shift():
 
 
  # 22:00 퇴근 알림
-    leave_alarm = now.replace(hour=22, minute=0, second=0, microsecond=0)
-    schedule_alarm(leave_alarm, "퇴근! 수고하셨습니다!")
+    if shift_type == 'afternoon':
+        leave_alarm = now.replace(hour=22, minute=0, second=0, microsecond=0)
+        schedule_alarm(leave_alarm, "퇴근! 수고하셨습니다!")
+    else:
+        leave_alarm = now.replace(hour=15, minute=0, second=0, microsecond=0)
+        schedule_alarm(leave_alarm, "퇴근! 수고하셨습니다!")
+        
 
     print("받은 데이터:", data)
     return jsonify({
