@@ -16,15 +16,41 @@ DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 def send_discord_message(content):
     if not DISCORD_WEBHOOK_URL:
         print("웹훅 URL이 설정되지 않았습니다.")
-        return
+        return None
     payload = {
         "content": content,
-        "username": "교대근무 알리미"  # 디스코드에 표시될 이름
+        "username": "교대근무 알리미"
     }
     try:
-        requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=5)
+        resp = requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=5)
+        if resp.status_code == 200:
+            data = resp.json()
+            return data.get("id")
+        elif resp.status_code == 204:
+            print("메시지 ID를 받을 수 없습니다 (204 No Content)")
+            return None
     except Exception as e:
         print("웹훅 전송 오류:", e)
+    return None
+
+
+
+def delete_discord_message(message_id):
+    if not DISCORD_WEBHOOK_URL or not message_id:
+        return
+    delete_url = f"{DISCORD_WEBHOOK_URL}/messages/{message_id}"
+    try:
+        resp = requests.delete(delete_url, timeout=5)
+        if resp.status_code == 204:
+            print("메시지 삭제 성공")
+        else:
+            print("메시지 삭제 실패:", resp.status_code, resp.text)
+    except Exception as e:
+        print("메시지 삭제 오류:", e)
+
+
+
+
 
 def schedule_alarm(run_time, content):
     if run_time > datetime.now():
@@ -51,11 +77,14 @@ def handle_shift():
     if not all(k in data for k in required):
         return jsonify({'status': 'error', 'message': '필수 데이터 누락'}), 400
 
+
+
     now = datetime.now() + timedelta(hours=9)
     shift_type = data['shiftType']
     shift_order = data['shiftOrder']
     shift_time_range = data['shiftTimeRange']
     task_type = data['taskType']
+
 
     info_map = {
         "morning": "오전근무",
@@ -97,6 +126,27 @@ def handle_shift():
         )
         
     send_discord_message(msg)
+    msg_id = send_discord_message(msg)
+    delete_time = None
+    if shift_type == "morning":
+        delete_time = now.replace(hour=15, minute=30, second=0, microsecond=0)
+    elif shift_type == "afternoon":
+        delete_time = now.replace(hour=0, minute=55, second=0, microsecond=0)
+
+# 삭제 예약 (msg_id가 있고, 예약 시간이 미래일 때만)
+    if msg_id and delete_time and delete_time > datetime.now():
+        scheduler.add_job(
+            delete_discord_message,
+            trigger=DateTrigger(run_date=delete_time),
+            args=[msg_id],
+            id=f"delete_{msg_id}",
+            replace_existing=True
+    )
+    print(f"메시지 삭제 예약: {delete_time} - 메시지ID: {msg_id}")
+
+
+
+
 
     if shift_type == "morning":
     # morningTimes는 ["10", "11", ...] 형태의 리스트
@@ -161,6 +211,7 @@ def handle_shift():
             t = now.replace(hour=20, minute=30, second=0, microsecond=0)
             schedule_alarm(t, "화장실청소 시간입니다!")
 
+
  # 22:00 퇴근 알림
     leave_alarm = now.replace(hour=22, minute=0, second=0, microsecond=0)
     schedule_alarm(leave_alarm, "퇴근! 수고하셨습니다!")
@@ -171,6 +222,7 @@ def handle_shift():
         'message': '근무 정보가 정상적으로 접수되고 알림이 예약되었습니다.',
         'data': data
     }), 200
+
 
 @app.route('/', methods=['GET'])
 def index():
