@@ -12,6 +12,7 @@ scheduler = BackgroundScheduler(daemon=True)
 scheduler.start()
 
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
+
 def send_discord_message(content):
     if not DISCORD_WEBHOOK_URL:
         print("웹훅 URL이 설정되지 않았습니다.")
@@ -62,15 +63,22 @@ def handle_shift():
         "recycling": "분리수거",
         "cleaning": "화장실청소"
     }
-    msg = (
-        f"근무 정보가 정상적으로 접수되고 알림이 예약되었습니다.\n"
-        f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
-        f"- 순번: {shift_order} 번\n"
-        f"- 사전 교대 시간대: {shift_time_range}\n"
-        f"- 추가작업: {info_map.get(task_type, task_type)}"
-    )
-    send_discord_message(msg)
 
+    if shift_type == "afternoon":
+        msg = (
+        f"근무 시간 접수 완료\n"
+        f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
+        f"- 순번: {shift_order}\n"
+        f"- 시간대: {shift_time_range}\n"
+        f"- 추가작업: {info_map.get(task_type, task_type)}"
+        )
+    else:
+        msg = (
+            f"근무 시간 접수 완료\n"
+            f"- 근무유형: {info_map.get(shift_type, shift_type)}"
+        )
+        
+    send_discord_message(msg)
 
     if shift_type == 'afternoon':
         # 4~10시 1-2-3 반복 교대 (포스 교대 시작/종료)
