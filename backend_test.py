@@ -11,7 +11,7 @@ CORS(app)
 scheduler = BackgroundScheduler(daemon=True)
 scheduler.start()
 
-DISCORD_WEBHOOK_URL = os.environ.get("https://discord.com/api/webhooks/1367799493516329030/gnKtt12do5kMGgv4JhsWAkX05-OzhV2FteNEgWTj7E5SMy-uf1bRBaZnrg5dC0-ii7jk")
+DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
 def send_discord_message(content):
     if not DISCORD_WEBHOOK_URL:
