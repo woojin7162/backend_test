@@ -68,14 +68,24 @@ def handle_shift():
         msg = (
         f"근무 시간 접수 완료\n"
         f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
-        f"- 순번: {shift_order}\n"
+        f"- 순번: {shift_order}\n번"
         f"- 시간대: {shift_time_range}\n"
         f"- 추가작업: {info_map.get(task_type, task_type)}"
         )
     else:
-        msg = (
+        morning_times = data.get("morningTimes", [])
+        if morning_times:
+            times_str = ", ".join([f"{int(t) if int(t) <= 12 else int(t)-12}시" for t in morning_times])
+            msg = (
+                f"근무 시간 접수 완료\n"
+                f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
+                f"- 선택한 교대시간: {times_str}"
+                )
+        else:
+            msg = (
             f"근무 시간 접수 완료\n"
-            f"- 근무유형: {info_map.get(shift_type, shift_type)}"
+            f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
+            f"- 선택한 교대시간 없음"
         )
         
     send_discord_message(msg)
@@ -89,12 +99,12 @@ def handle_shift():
             except ValueError:
                 continue
         # 시작 알림: (선택한 시각 - 1)시 54분
-        start_alarm = now.replace(hour=hour-1, minute=54, second=0, microsecond=0)
+            start_alarm = now.replace(hour=hour-1, minute=54, second=0, microsecond=0)
         # 종료 알림: (선택한 시각) 54분
-        end_alarm = now.replace(hour=hour, minute=54, second=0, microsecond=0)
+            end_alarm = now.replace(hour=hour, minute=54, second=0, microsecond=0)
         # 오전 1,2시는 13,14로 들어오므로 12시간제 표기 보정
-        schedule_alarm(start_alarm, "포스 시작 교대 시간입니다!")
-        schedule_alarm(end_alarm, "포스 종료 교대 시간입니다! 주차장을 확인해주세요!")
+            schedule_alarm(start_alarm, "포스 시작 교대 시간입니다!")
+            schedule_alarm(end_alarm, "포스 종료 교대 시간입니다! 주차장을 확인해주세요!")
 
 
 
