@@ -80,6 +80,24 @@ def handle_shift():
         
     send_discord_message(msg)
 
+    if shift_type == "morning":
+    # morningTimes는 ["10", "11", ...] 형태의 리스트
+        morning_times = data.get("morningTimes", [])
+        for t in morning_times:
+            try:
+                hour = int(t)
+            except ValueError:
+                continue
+        # 시작 알림: (선택한 시각 - 1)시 54분
+        start_alarm = now.replace(hour=hour-1, minute=54, second=0, microsecond=0)
+        # 종료 알림: (선택한 시각) 54분
+        end_alarm = now.replace(hour=hour, minute=54, second=0, microsecond=0)
+        # 오전 1,2시는 13,14로 들어오므로 12시간제 표기 보정
+        schedule_alarm(start_alarm, "포스 시작 교대 시간입니다!")
+        schedule_alarm(end_alarm, "포스 종료 교대 시간입니다! 주차장을 확인해주세요!")
+
+
+
     if shift_type == 'afternoon':
         # 4~10시 1-2-3 반복 교대 (포스 교대 시작/종료)
         order_times = {
