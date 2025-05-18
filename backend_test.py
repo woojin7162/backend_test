@@ -11,13 +11,16 @@ CORS(app)
 scheduler = BackgroundScheduler(daemon=True)
 scheduler.start()
 
-DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
+DISCORD_WEBHOOK_URL = os.environ.get("https://discord.com/api/webhooks/1367799493516329030/gnKtt12do5kMGgv4JhsWAkX05-OzhV2FteNEgWTj7E5SMy-uf1bRBaZnrg5dC0-ii7jk")
 
 def send_discord_message(content):
     if not DISCORD_WEBHOOK_URL:
         print("웹훅 URL이 설정되지 않았습니다.")
         return
-    payload = {"content": content}
+    payload = {
+        "content": content,
+        "username": "교대근무 알리미"  # 디스코드에 표시될 이름
+    }
     try:
         requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=5)
     except Exception as e:
@@ -54,8 +57,22 @@ def handle_shift():
     shift_time_range = data['shiftTimeRange']
     task_type = data['taskType']
 
-    send_discord_message("근무 시간 접수 완료")
-    
+    info_map = {
+        "morning": "오전근무",
+        "afternoon": "오후근무",
+        "recycling": "분리수거",
+        "cleaning": "화장실청소"
+    }
+    msg = (
+        f"근무 시간 접수 완료\n"
+        f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
+        f"- 순번: {shift_order}\n"
+        f"- 시간대: {shift_time_range}\n"
+        f"- 추가작업: {info_map.get(task_type, task_type)}"
+    )
+    send_discord_message(msg)
+
+
     if shift_type == 'afternoon':
         # 4~10시 1-2-3 반복 교대 (포스 교대 시작/종료)
         order_times = {
