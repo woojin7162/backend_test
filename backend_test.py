@@ -54,6 +54,8 @@ def handle_shift():
     shift_time_range = data['shiftTimeRange']
     task_type = data['taskType']
 
+    send_discord_message("근무 시간 접수 완료")
+    
     if shift_type == 'afternoon':
         # 4~10시 1-2-3 반복 교대 (포스 교대 시작/종료)
         order_times = {
