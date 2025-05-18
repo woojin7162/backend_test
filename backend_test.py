@@ -65,7 +65,7 @@ def handle_shift():
     msg = (
         f"근무 시간 접수 완료\n"
         f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
-        f"- 순번: {shift_order}\n"
+        f"- 순번: {shift_order}번\n"
         f"- 시간대: {shift_time_range}\n"
         f"- 추가작업: {info_map.get(task_type, task_type)}"
     )
