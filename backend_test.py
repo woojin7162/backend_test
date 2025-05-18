@@ -124,8 +124,7 @@ def handle_shift():
             f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
             f"- 선택한 교대시간 없음"
         )
-        
-    send_discord_message(msg)
+            
     msg_id = send_discord_message(msg)
     delete_time = None
     if shift_type == "morning":
