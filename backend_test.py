@@ -51,7 +51,7 @@ def handle_shift():
     if not all(k in data for k in required):
         return jsonify({'status': 'error', 'message': '필수 데이터 누락'}), 400
 
-    now = datetime.now()
+    now = datetime.now() + timedelta(hours=9)
     shift_type = data['shiftType']
     shift_order = data['shiftOrder']
     shift_time_range = data['shiftTimeRange']
