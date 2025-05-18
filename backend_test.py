@@ -130,7 +130,7 @@ def handle_shift():
     if shift_type == "morning":
         delete_time = now.replace(hour=15, minute=30, second=0, microsecond=0)
     elif shift_type == "afternoon":
-        delete_time = now.replace(hour=0, minute=55, second=0, microsecond=0)
+        delete_time = now.replace(hour=1, minute=17, second=0, microsecond=0)
 
 # 삭제 예약 (msg_id가 있고, 예약 시간이 미래일 때만)
     if msg_id and delete_time and delete_time > datetime.now():
