@@ -119,8 +119,8 @@ def handle_shift():
             # 시작 알림 (시작 1분 전)
             start_alarm = now.replace(hour=start_hour-1, minute=54, second=0, microsecond=0)
             end_alarm = now.replace(hour=end_hour-1, minute=54, second=0, microsecond=0)
-            schedule_alarm(start_alarm, f"포스 시작 교대 시간입니다! (순번 {shift_order})번")
-            schedule_alarm(end_alarm, f"포스 종료 교대 시간입니다! 주차장을 확인해주세요! (순번 {shift_order})")
+            schedule_alarm(start_alarm, f"포스 시작 교대 시간입니다! 순번 {shift_order}번")
+            schedule_alarm(end_alarm, "포스 종료 교대 시간입니다! 주차장을 확인해주세요!")
 
         # 2~4시 or 3~4시 구간별 1~3번 교대
         if shift_time_range == '2-4':
@@ -141,8 +141,8 @@ def handle_shift():
             if str(num) == shift_order:
                 start = now.replace(hour=sh, minute=sm-1, second=0, microsecond=0)  # 1분 전
                 end = now.replace(hour=eh, minute=em-1, second=0, microsecond=0)
-                schedule_alarm(start, f"포스 시작 교대 시간입니다! ({sh}:{sm:02d}, 순번 {num})")
-                schedule_alarm(end, f"포스 종료 교대 시간입니다! ({eh}:{em:02d}, 순번 {num})")
+                schedule_alarm(start, f"포스 시작 교대 시간입니다! ({sh}:{sm:02d}, 순번 {num}번)")
+                schedule_alarm(end, f"포스 종료 교대 시간입니다! ({eh}:{em:02d}, 순번 {num}번)")
 
         # 분리수거/화장실청소 알림
         if task_type == 'recycling':
