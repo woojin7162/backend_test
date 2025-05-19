@@ -6,10 +6,6 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.date import DateTrigger
 
-import logging
-logging.basicConfig()
-logging.getLogger('apscheduler').setLevel(logging.DEBUG)
-
 app = Flask(__name__)
 CORS(app)
 scheduler = BackgroundScheduler(daemon=True)
@@ -81,6 +77,16 @@ def handle_shift():
     if not all(k in data for k in required):
         return jsonify({'status': 'error', 'message': '필수 데이터 누락'}), 400
 
+    content = "1분 뒤에 보내는 테스트 메시지입니다."
+    run_time = datetime.now() + timedelta(minutes=1)
+    scheduler.add_job(
+        send_discord_message,
+        trigger=DateTrigger(run_date=run_time),
+        args=[content],
+        id=f"delayed_{run_time.strftime('%Y%m%d%H%M%S')}_{hash(content)}",
+        replace_existing=False
+    )
+    print(f"1분 뒤 디스코드 메시지 예약: {run_time} - {content}")
 
 
     now = datetime.now() + timedelta(hours=9)
@@ -128,14 +134,14 @@ def handle_shift():
             f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
             f"- 선택한 교대시간 없음"
         )
-            
+        
     msg_id = send_discord_message(msg)
     
     delete_time = None
     if shift_type == "morning":
         delete_time = now.replace(hour=15, minute=30, second=0, microsecond=0)
     elif shift_type == "afternoon":
-        delete_time = now.replace(hour=1, minute=17, second=0, microsecond=0)
+        delete_time = now.replace(hour=0, minute=55, second=0, microsecond=0)
 
 # 삭제 예약 (msg_id가 있고, 예약 시간이 미래일 때만)
     if msg_id and delete_time and delete_time > datetime.now():
@@ -207,7 +213,7 @@ def handle_shift():
                 schedule_alarm(end, f"포스 종료 교대 시간입니다! ({eh}:{em:02d}, 순번 {num})")
 
         # 분리수거/화장실청소 알림
-    if shift_order != '2' and shift_type == 'afternoon' :
+    if shift_order != '2':
         if task_type == 'recycling':
             t = now.replace(hour=20, minute=0, second=0, microsecond=0)
             schedule_alarm(t, "분리수거 시간입니다!")
@@ -217,13 +223,8 @@ def handle_shift():
 
 
  # 22:00 퇴근 알림
-    if shift_type == 'afternoon':
-        leave_alarm = now.replace(hour=22, minute=0, second=0, microsecond=0)
-        schedule_alarm(leave_alarm, "퇴근! 수고하셨습니다!")
-    else:
-        leave_alarm = now.replace(hour=15, minute=0, second=0, microsecond=0)
-        schedule_alarm(leave_alarm, "퇴근! 수고하셨습니다!")
-        
+    leave_alarm = now.replace(hour=22, minute=0, second=0, microsecond=0)
+    schedule_alarm(leave_alarm, "퇴근! 수고하셨습니다!")
 
     print("받은 데이터:", data)
     return jsonify({
