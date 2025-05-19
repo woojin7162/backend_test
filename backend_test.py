@@ -20,6 +20,7 @@ scheduler.start()
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
 def send_discord_message(content):
+    print(f"send_discord_message 실행됨: {content}")
     if not DISCORD_WEBHOOK_URL:
         print("웹훅 URL이 설정되지 않았습니다.")
         return None
