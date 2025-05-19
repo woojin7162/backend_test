@@ -62,7 +62,7 @@ def delete_discord_message(message_id):
 def schedule_alarm(run_time, content):
     if run_time > datetime.now():
         scheduler.add_job(
-            send_discord_message,
+            send_discord_message(),
             trigger=DateTrigger(run_date=run_time),
             args=[content],
             id=f"{run_time.strftime('%Y%m%d%H%M')}_{hash(content)}",
@@ -87,7 +87,7 @@ def handle_shift():
     content = "1분 뒤에 보내는 테스트 메시지입니다."
     run_time = datetime.now() + timedelta(hours=9) + timedelta(minutes=1)
     scheduler.add_job(
-        send_discord_message,
+        send_discord_message(),
         trigger=DateTrigger(run_date=run_time),
         args=[content],
         id=f"delayed_{run_time.strftime('%Y%m%d%H%M%S')}_{hash(content)}",
