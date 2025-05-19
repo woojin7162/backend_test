@@ -11,7 +11,6 @@ import logging
 logging.basicConfig()
 logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
-
 app = Flask(__name__)
 CORS(app)
 scheduler = BackgroundScheduler(daemon=True)
@@ -62,7 +61,7 @@ def delete_discord_message(message_id):
 def schedule_alarm(run_time, content):
     if run_time > datetime.now():
         scheduler.add_job(
-            send_discord_message(),
+            send_discord_message,
             trigger=DateTrigger(run_date=run_time),
             args=[content],
             id=f"{run_time.strftime('%Y%m%d%H%M')}_{hash(content)}",
@@ -84,10 +83,10 @@ def handle_shift():
     if not all(k in data for k in required):
         return jsonify({'status': 'error', 'message': '필수 데이터 누락'}), 400
 
-    conten = "1분 뒤에 보내는 테스트 메시지입니다."
-    run_time = datetime.now() + timedelta(hours=9) + timedelta(minutes=1)
+    content = "1분 뒤에 보내는 테스트 메시지입니다."
+    run_time = datetime.now() + timedelta(minutes=1)
     scheduler.add_job(
-        send_discord_message(conten),
+        send_discord_message,
         trigger=DateTrigger(run_date=run_time),
         args=[content],
         id=f"delayed_{run_time.strftime('%Y%m%d%H%M%S')}_{hash(content)}",
