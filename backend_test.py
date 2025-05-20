@@ -236,6 +236,14 @@ def handle_shift():
         'data': data
     }), 200
 
+@app.route('/test_webhook', methods=['POST'])
+def test_webhook():
+    now = datetime.utcnow() + timedelta(hours=9)  # 한국시간
+    run_time = now + timedelta(minutes=1)         # 1분 뒤
+    content = "테스트 메시지"
+    save_scheduled_message(run_time, content)
+    return jsonify({'status': 'success', 'message': '1분 뒤에 테스트 메시지가 예약되었습니다.'})
+
 @app.route('/', methods=['GET'])
 def index():
     return jsonify({
