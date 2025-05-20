@@ -156,7 +156,12 @@ def handle_shift():
     if message_id:
         collection.insert_one({
             "discord_message_id": message_id,
-            "sent_at": datetime.utcnow() + timedelta(hours=9)
+            "sent_at": datetime.utcnow() + timedelta(hours=9),
+            "shiftType": shift_type,
+            "shiftOrder": shift_order,
+            "shiftTimeRange": shift_time_range,
+            "taskType": task_type,
+            "morningTimes": data.get("morningTimes", [])
     })
 
 
