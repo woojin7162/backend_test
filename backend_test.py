@@ -4,7 +4,6 @@ import os
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 import requests
-from discord import Webhook
 
 
 MONGODB_URI = os.environ.get("MONGODB_URI")
