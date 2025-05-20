@@ -4,6 +4,8 @@ import os
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 import requests
+from discord import Webhook
+
 
 MONGODB_URI = os.environ.get("MONGODB_URI")
 client = MongoClient(MONGODB_URI)
@@ -48,8 +50,18 @@ def send_discord_message(content):
 
 @app.route('/clear_schedules', methods=['POST'])
 def clear_schedules():
+    # 디스코드 메시지 삭제
+    webhook = Webhook.from_url(os.environ.get("DISCORD_WEBHOOK_URL"))
+    messages = list(collection.find({"discord_message_id": {"$exists": True}}))
+    for msg in messages:
+        try:
+            webhook.delete_message(msg["discord_message_id"])
+            print(f"메시지 삭제 성공: {msg['discord_message_id']}")
+        except Exception as e:
+            print("메시지 삭제 오류:", e)
+    # DB 비우기
     collection.delete_many({})
-    return jsonify({'status': 'success', 'message': '모든 예약이 삭제되었습니다.'})
+    return jsonify({'status': 'success', 'message': '모든 예약 및 디스코드 메시지가 삭제되었습니다.'})
 
 @app.route('/', methods=['POST', 'OPTIONS'])
 def handle_shift():
