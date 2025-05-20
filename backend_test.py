@@ -58,6 +58,7 @@ def clear_schedules():
             print("삭제 시도 ID:", msg['discord_message_id'])
             resp = requests.delete(delete_url, timeout=5)
             print(f"메시지 삭제 응답: {resp.status_code}, 내용: {resp.text}")
+            print(delete_url)
         except Exception as e:
             print("메시지 삭제 오류:", e)
     # DB 비우기
