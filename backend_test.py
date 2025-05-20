@@ -162,5 +162,19 @@ def index():
     })
 
 if __name__ == '__main__':
+    from sqlalchemy import MetaData, Table, Column, Integer, Text, TIMESTAMP
+    metadata = MetaData()
+    scheduled_messages = Table(
+        "scheduled_messages",
+        metadata,
+        Column("id", Integer, primary_key=True),
+        Column("content", Text, nullable=False),
+        Column("run_time", TIMESTAMP, nullable=False),
+    )
+    # 이미 위에서 engine을 만들었으니 재생성 필요 없음
+    metadata.create_all(engine)
+
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
+
