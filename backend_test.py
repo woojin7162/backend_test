@@ -111,13 +111,13 @@ def handle_shift():
                 f"- 선택한 교대시간 없음"
             )
     # 즉시 메시지 예약
+    # 즉시 메시지 전송
     message_id = send_discord_message(msg)
     if message_id:
         collection.insert_one({
-            "content": msg,
-            "run_time": datetime.utcnow() + timedelta(hours=9),
-            "discord_message_id": message_id
-        })
+            "discord_message_id": message_id,
+            "sent_at": datetime.utcnow() + timedelta(hours=9)
+    })
 
 
 
