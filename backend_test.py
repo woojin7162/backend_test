@@ -19,6 +19,11 @@ def save_scheduled_message(run_time, content):
     collection.insert_one({"content": content, "run_time": run_time})
         
 
+@app.route('/clear_schedules', methods=['POST'])
+def clear_schedules():
+    collection.delete_many({})
+    return jsonify({'status': 'success', 'message': '모든 예약이 삭제되었습니다.'})
+
 @app.route('/', methods=['POST', 'OPTIONS'])
 def handle_shift():
     if request.method == 'OPTIONS':
