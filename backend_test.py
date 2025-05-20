@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 from datetime import datetime, timedelta
 from pymongo import MongoClient
+import requests
 
 MONGODB_URI = os.environ.get("MONGODB_URI")
 client = MongoClient(MONGODB_URI)
@@ -21,7 +22,22 @@ def save_scheduled_message(run_time, content):
         print(f"[예약 무시] 이미 지난 시간({run_time})의 메시지는 저장하지 않습니다.")
         return
     collection.insert_one({"content": content, "run_time": run_time})
-        
+
+def send_discord_message(content):
+    DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
+    if not DISCORD_WEBHOOK_URL:
+        print("웹훅 URL이 설정되지 않았습니다.")
+        return
+    payload = {
+        "content": content,
+        "username": "교대근무 알리미"
+    }
+    try:
+        resp = requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=5)
+        print("웹훅 응답:", resp.status_code, resp.text)
+    except Exception as e:
+        print("웹훅 전송 오류:", e)
+
 
 @app.route('/clear_schedules', methods=['POST'])
 def clear_schedules():
@@ -88,7 +104,7 @@ def handle_shift():
                 f"- 선택한 교대시간 없음"
             )
     # 즉시 메시지 예약
-    save_scheduled_message(now, msg)
+    send_discord_message(msg)
 
     # 삭제 예약 시간 계산
     delete_time = None
