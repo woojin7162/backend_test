@@ -230,12 +230,7 @@ def handle_shift():
     save_scheduled_message(leave_alarm, "퇴근! 수고하셨습니다!")
  
     print("받은 데이터:", data)
-
-    now = datetime.utcnow() + timedelta(hours=9)  # 한국시간
-    run_time = now + timedelta(seconds=10)
-    save_scheduled_message(run_time, "테스트 메시지")
-
-
+    
     return jsonify({
         'status': 'success',
         'message': '근무 정보가 정상적으로 접수되고 알림이 예약되었습니다.',
