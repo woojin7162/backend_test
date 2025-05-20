@@ -54,8 +54,10 @@ def clear_schedules():
     for msg in messages:
         try:
             delete_url = os.environ.get("DISCORD_WEBHOOK_URL") + f"/messages/{msg['discord_message_id']}"
+            print("삭제 시도 URL:", delete_url)
+            print("삭제 시도 ID:", msg['discord_message_id'])
             resp = requests.delete(delete_url, timeout=5)
-            print(f"메시지 삭제 응답: {resp.status_code}")
+            print(f"메시지 삭제 응답: {resp.status_code}, 내용: {resp.text}")
         except Exception as e:
             print("메시지 삭제 오류:", e)
     # DB 비우기
