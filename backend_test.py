@@ -2,25 +2,22 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from datetime import datetime, timedelta
-from sqlalchemy import create_engine, text
+from pymongo import MongoClient
 
-import logging
+MONGODB_URI = os.environ.get("MONGODB_URI")
+client = MongoClient(MONGODB_URI)
+db = client["Cluster0"]  # 실제 DB 이름으로 변경
+collection = db["scheduled_messages"]
 
-logging.basicConfig()
-logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 CORS(app)
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
-engine = create_engine(DATABASE_URL)
+
 
 def save_scheduled_message(run_time, content):
-    with engine.begin() as conn:
-        conn.execute(
-            text("INSERT INTO scheduled_messages (content, run_time) VALUES (:content, :run_time)"),
-            {"content": content, "run_time": run_time}
-        )
+    collection.insert_one({"content": content, "run_time": run_time})
+        
 
 @app.route('/', methods=['POST', 'OPTIONS'])
 def handle_shift():
@@ -162,19 +159,8 @@ def index():
     })
 
 if __name__ == '__main__':
-    from sqlalchemy import MetaData, Table, Column, Integer, Text, TIMESTAMP
-    metadata = MetaData()
-    scheduled_messages = Table(
-        "scheduled_messages",
-        metadata,
-        Column("id", Integer, primary_key=True),
-        Column("content", Text, nullable=False),
-        Column("run_time", TIMESTAMP, nullable=False),
-    )
-    # 이미 위에서 engine을 만들었으니 재생성 필요 없음
-    metadata.create_all(engine)
-
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
 
 
+    
