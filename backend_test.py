@@ -46,6 +46,41 @@ def send_discord_message(content):
         print("웹훅 전송 오류:", e)
     return None
 
+@app.route('/current_status', methods=['GET'])
+def current_status():
+    latest = collection.find_one(sort=[('sent_at', -1)])
+    if latest:
+        # outputInfo 생성
+        shift_type = latest.get('shiftType')
+        shift_order = latest.get('shiftOrder')
+        shift_time_range = latest.get('shiftTimeRange')
+        task_type = latest.get('taskType')
+        morning_times = latest.get('morningTimes', [])
+
+        info_map = {
+            "morning": "오전근무",
+            "afternoon": "오후근무",
+            "recycling": "분리수거",
+            "cleaning": "화장실청소"
+        }
+
+        if shift_type == "afternoon":
+            output_info = f"{info_map.get(shift_type, shift_type)}, 순번 {shift_order}, 시간대 {shift_time_range}"
+            if shift_order in ['1', '3']:
+                output_info += f", 추가 작업: {info_map.get(task_type, task_type)}"
+        else:
+            if morning_times:
+                times_str = ", ".join([f"{int(t) if int(t) <= 12 else int(t)-12}시" for t in morning_times])
+                output_info = f"{info_map.get(shift_type, shift_type)}<br>선택한 교대시간 : {times_str}"
+            else:
+                output_info = f"{info_map.get(shift_type, shift_type)}<br>선택한 교대시간 없음"
+
+        latest['outputInfo'] = output_info
+        return jsonify(latest)
+    else:
+        return jsonify({})
+
+
 
 @app.route('/clear_schedules', methods=['POST'])
 def clear_schedules():
