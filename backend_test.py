@@ -51,12 +51,12 @@ def send_discord_message(content):
 @app.route('/clear_schedules', methods=['POST'])
 def clear_schedules():
     # 디스코드 메시지 삭제
-    webhook = Webhook.from_url(os.environ.get("DISCORD_WEBHOOK_URL"))
     messages = list(collection.find({"discord_message_id": {"$exists": True}}))
     for msg in messages:
         try:
-            webhook.delete_message(msg["discord_message_id"])
-            print(f"메시지 삭제 성공: {msg['discord_message_id']}")
+            delete_url = os.environ.get("DISCORD_WEBHOOK_URL") + f"/messages/{msg['discord_message_id']}"
+            resp = requests.delete(delete_url, timeout=5)
+            print(f"메시지 삭제 응답: {resp.status_code}")
         except Exception as e:
             print("메시지 삭제 오류:", e)
     # DB 비우기
