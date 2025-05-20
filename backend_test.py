@@ -27,16 +27,23 @@ def send_discord_message(content):
     DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
     if not DISCORD_WEBHOOK_URL:
         print("웹훅 URL이 설정되지 않았습니다.")
-        return
+        return None
     payload = {
         "content": content,
         "username": "교대근무 알리미"
     }
     try:
-        resp = requests.post(DISCORD_WEBHOOK_URL, json=payload, timeout=5)
+        url = DISCORD_WEBHOOK_URL
+        if "?wait=true" not in url:
+            url += "?wait=true"
+        resp = requests.post(url, json=payload, timeout=5)
         print("웹훅 응답:", resp.status_code, resp.text)
+        if resp.status_code == 200:
+            data = resp.json()
+            return data.get("id")  # 메시지 ID 반환
     except Exception as e:
         print("웹훅 전송 오류:", e)
+    return None
 
 
 @app.route('/clear_schedules', methods=['POST'])
@@ -104,7 +111,15 @@ def handle_shift():
                 f"- 선택한 교대시간 없음"
             )
     # 즉시 메시지 예약
-    send_discord_message(msg)
+    message_id = send_discord_message(msg)
+    if message_id:
+        collection.insert_one({
+            "content": msg,
+            "run_time": datetime.utcnow() + timedelta(hours=9),
+            "discord_message_id": message_id
+        })
+
+
 
     # 삭제 예약 시간 계산
     delete_time = None
