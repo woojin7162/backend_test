@@ -50,6 +50,8 @@ def send_discord_message(content):
 def current_status():
     latest = collection.find_one(sort=[('sent_at', -1)])
     if latest:
+        if '_id' in latest:
+            latest['_id'] = str(latest['_id'])
         # outputInfo 생성
         shift_type = latest.get('shiftType')
         shift_order = latest.get('shiftOrder')
