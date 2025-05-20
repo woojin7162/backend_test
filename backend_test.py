@@ -228,21 +228,20 @@ def handle_shift():
 
     leave_alarm = now.replace(hour=22, minute=0, second=0, microsecond=0)
     save_scheduled_message(leave_alarm, "퇴근! 수고하셨습니다!")
-
+ 
     print("받은 데이터:", data)
+
+    now = datetime.utcnow() + timedelta(hours=9)  # 한국시간
+    run_time = now + timedelta(seconds=10)
+    save_scheduled_message(run_time, "테스트 메시지")
+
+
     return jsonify({
         'status': 'success',
         'message': '근무 정보가 정상적으로 접수되고 알림이 예약되었습니다.',
         'data': data
     }), 200
 
-@app.route('/test_webhook', methods=['POST'])
-def test_webhook():
-    now = datetime.utcnow() + timedelta(hours=9)  # 한국시간
-    run_time = now + timedelta(seconds=10)         # 1분 뒤
-    content = "테스트 메시지"
-    save_scheduled_message(run_time, content)
-    return jsonify({'status': 'success', 'message': '1분 뒤에 테스트 메시지가 예약되었습니다.'})
 
 @app.route('/', methods=['GET'])
 def index():
