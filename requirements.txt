@@ -6,3 +6,4 @@ psycopg2-binary==2.9.9
 gunicorn==21.2.0
 apscheduler==3.10.1
 pymongo==4.7.2
+discord.py==2.3.2
