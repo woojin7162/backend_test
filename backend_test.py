@@ -16,6 +16,10 @@ CORS(app)
 
 
 def save_scheduled_message(run_time, content):
+    now = datetime.utcnow() + timedelta(hours=9)
+    if run_time < now:
+        print(f"[예약 무시] 이미 지난 시간({run_time})의 메시지는 저장하지 않습니다.")
+        return
     collection.insert_one({"content": content, "run_time": run_time})
         
 
