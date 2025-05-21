@@ -58,6 +58,10 @@ def current_status():
         shift_time_range = latest.get('shiftTimeRange')
         task_type = latest.get('taskType')
         morning_times = latest.get('morningTimes', [])
+        num_people = latest.get('numPeople')
+        my_order = latest.get('myOrder')
+        shift_start = latest.get('shiftStart')    # 추가
+        shift_end = latest.get('shiftEnd')
 
         info_map = {
             "morning": "오전근무",
@@ -112,6 +116,8 @@ def handle_shift():
     task_type = data['taskType']
     shift_start = data.get("shiftStart") or None
     shift_end = data.get("shiftEnd") or None
+    num_people = data.get("numPeople") or None
+    my_order = data.get("myOrder") or None
 
     info_map = {
         "morning": "오전근무",
@@ -165,6 +171,8 @@ def handle_shift():
             "shiftStart": shift_start,
             "shiftEnd": shift_end,
             "taskType": task_type,
+            "numPeople": num_people,
+            "myOrder": my_order,
             "morningTimes": data.get("morningTimes", [])
     })
 
