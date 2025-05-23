@@ -59,7 +59,7 @@ def current_status():
         morning_times = latest.get('morningTimes', [])
         num_people = latest.get('numPeople')
         my_order = latest.get('myOrder')
-        shift_start = latest.get('shiftStart')    # 추가
+        shift_start = latest.get('shiftStart')
         shift_end = latest.get('shiftEnd')
 
         info_map = {
@@ -71,14 +71,22 @@ def current_status():
 
         if shift_type == "afternoon":
             output_info = f"{info_map.get(shift_type, shift_type)}, 순번 {shift_order}"
+            if shift_start and shift_end:
+                output_info += f", 시간범위 {shift_start}시~{shift_end}시"
             if shift_order in ['1', '3']:
                 output_info += f", 추가 작업: {info_map.get(task_type, task_type)}"
+            # 사전교대 정보 추가
+            output_info += f", 사전교대인원: {num_people or '-'}명, 사전교대순번: {my_order or '-'}번"
         else:
             if morning_times:
                 times_str = ", ".join([f"{int(t) if int(t) <= 12 else int(t)-12}시" for t in morning_times])
                 output_info = f"{info_map.get(shift_type, shift_type)}<br>선택한 교대시간 : {times_str}"
             else:
                 output_info = f"{info_map.get(shift_type, shift_type)}<br>선택한 교대시간 없음"
+            if shift_start and shift_end:
+                output_info += f"<br>시간범위: {shift_start}시~{shift_end}시"
+            # 사전교대 정보 추가
+            output_info += f"<br>사전교대인원: {num_people or '-'}명, 사전교대순번: {my_order or '-'}번"
 
         latest['outputInfo'] = output_info
         return jsonify(latest)
@@ -131,7 +139,9 @@ def handle_shift():
                 f"근무 시간 접수 완료\n"
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 순번: {shift_order}\n"
-                f"- 시간범위: {shift_start}시~{shift_end}시"
+                f"- 시간범위: {shift_start}시~{shift_end}시\n"
+                f"- 사전교대인원: {num_people or '-'}명\n"
+                f"- 사전교대순번: {my_order or '-'}번"
             )
         else:
             msg = (
@@ -139,7 +149,9 @@ def handle_shift():
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 순번: {shift_order}\n"
                 f"- 시간범위: {shift_start}시~{shift_end}시\n"
-                f"- 추가작업: {info_map.get(task_type, task_type)}"
+                f"- 추가작업: {info_map.get(task_type, task_type)}\n"
+                f"- 사전교대인원: {num_people or '-'}명\n"
+                f"- 사전교대순번: {my_order or '-'}번"
             )
     else:
         morning_times = data.get("morningTimes", [])
@@ -149,13 +161,17 @@ def handle_shift():
                 f"근무 시간 접수 완료\n"
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 시간범위: {shift_start}시~{shift_end}시\n"
-                f"- 선택한 교대시간: {times_str}"
+                f"- 선택한 교대시간: {times_str}\n"
+                f"- 사전교대인원: {num_people or '-'}명\n"
+                f"- 사전교대순번: {my_order or '-'}번"
             )
         else:
             msg = (
                 f"근무 시간 접수 완료\n"
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
-                f"- 선택한 교대시간 없음"
+                f"- 선택한 교대시간 없음\n"
+                f"- 사전교대인원: {num_people or '-'}명\n"
+                f"- 사전교대순번: {my_order or '-'}번"
             )
     # 즉시 메시지 예약
     # 즉시 메시지 전송
