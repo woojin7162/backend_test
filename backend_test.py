@@ -72,11 +72,11 @@ def current_status():
             f"근무유형: {info_map.get(shift_type, shift_type)}<br>"
             f"순번: {shift_order}<br>"
             )
+            output_info += f"사전교대인원: {num_people or '-'}명<br>사전교대순번: {my_order or '-'}번"
             if shift_start and shift_end:
                 output_info += f"시간범위: {shift_start}시~{shift_end}시<br>"
             if shift_order in ['1', '3']:
                 output_info += f"추가 작업: {info_map.get(task_type, task_type)}<br>"
-            output_info += f"사전교대인원: {num_people or '-'}명<br>사전교대순번: {my_order or '-'}번"
         else:
             if morning_times:
                 times_str = ", ".join([f"{int(t) if int(t) <= 12 else int(t)-12}시" for t in morning_times])
