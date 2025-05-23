@@ -67,32 +67,48 @@ def current_status():
 
         if shift_type == "afternoon":
             output_info = (
-            f"{info_map.get(shift_type, shift_type)}<br>"
-            f"순번: {shift_order}<br>"
+                f"{info_map.get(shift_type, shift_type)}<br>"
             )
             if shift_start and shift_end:
                 output_info += f"시간범위: {shift_start}시~{shift_end}시<br>"
+            else:
+                output_info += "시간범위: -<br>"
+            output_info += f"사전교대인원: {num_people or '-'}명<br>"
+            output_info += f"사전교대순번: {my_order or '-'}번<br>"
+            output_info += f"메인교대순번: {shift_order or '-'}번<br>"
             if shift_order in ['1', '3']:
                 output_info += f"추가 작업: {info_map.get(task_type, task_type)}<br>"
-            output_info += f"사전교대인원: {num_people or '-'}명<br>사전교대순번: {my_order or '-'}번"
         else:
             if morning_times:
                 times_str = ", ".join([f"{int(t) if int(t) <= 12 else int(t)-12}시" for t in morning_times])
                 output_info = (
                     f"{info_map.get(shift_type, shift_type)}<br>"
-                    f"선택한 교대시간: {times_str}<br>"
-            )
+                )
+                if shift_start and shift_end:
+                    output_info += f"시간범위: {shift_start}시~{shift_end}시<br>"
+                else:
+                    output_info += "시간범위: -<br>"
+                output_info += f"사전교대인원: {num_people or '-'}명<br>"
+                output_info += f"사전교대순번: {my_order or '-'}번<br>"
+                output_info += f"메인교대순번: {shift_order or '-'}번<br>"
+                output_info += f"선택한 교대시간: {times_str}<br>"
             else:
-                output_info = f"{info_map.get(shift_type, shift_type)}<br>선택한 교대시간 없음<br>"
-            if shift_start and shift_end:
-                output_info += f"시간범위: {shift_start}시~{shift_end}시<br>"
-            output_info += f"사전교대인원: {num_people or '-'}명<br>사전교대순번: {my_order or '-'}번"
+                output_info = (
+                    f"{info_map.get(shift_type, shift_type)}<br>"
+                )
+                if shift_start and shift_end:
+                    output_info += f"시간범위: {shift_start}시~{shift_end}시<br>"
+                else:
+                    output_info += "시간범위: -<br>"
+                output_info += f"사전교대인원: {num_people or '-'}명<br>"
+                output_info += f"사전교대순번: {my_order or '-'}번<br>"
+                output_info += f"메인교대순번: {shift_order or '-'}번<br>"
+                output_info += "선택한 교대시간 없음<br>"
 
         latest['outputInfo'] = output_info
         return jsonify(latest)
     else:
         return jsonify({})
-
 
 
 @app.route('/clear_schedules', methods=['POST'])
@@ -138,19 +154,19 @@ def handle_shift():
             msg = (
                 f"근무 시간 접수 완료\n"
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
+                f"- 시간범위: {shift_start}시~{shift_end}시\n" 
                 f"- 사전교대인원: {num_people or '-'}명\n"
                 f"- 사전교대순번: {my_order or '-'}번"
                 f"- 메인교대순번: {shift_order}\n"
-                f"- 시간범위: {shift_start}시~{shift_end}시\n" 
             )
         else:
             msg = (
                 f"근무 시간 접수 완료\n"
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
+                f"- 시간범위: {shift_start}시~{shift_end}시\n"
                 f"- 사전교대인원: {num_people or '-'}명\n"
                 f"- 사전교대순번: {my_order or '-'}번"
                 f"- 메인교대순번: {shift_order}\n"
-                f"- 시간범위: {shift_start}시~{shift_end}시\n"
                 f"- 추가작업: {info_map.get(task_type, task_type)}\n"             
             )
     else:
@@ -160,9 +176,9 @@ def handle_shift():
             msg = (
                 f"근무 시간 접수 완료\n"
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
+                f"- 시간범위: {shift_start}시~{shift_end}시\n"
                 f"- 사전교대인원: {num_people or '-'}명\n"
                 f"- 사전교대순번: {my_order or '-'}번"
-                f"- 시간범위: {shift_start}시~{shift_end}시\n"
                 f"- 선택한 교대시간: {times_str}\n"
             )
         else:
