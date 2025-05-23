@@ -26,7 +26,7 @@ def save_scheduled_message(run_time, content):
 
 
 def send_notilab_push(body):
-    to_nickname = "Shift_Alarm"  # notilab 앱 닉네임
+    to_nickname = "Alert"  # notilab 앱 닉네임
     title = "교대근무 알리미"
     sckey = "89150194-88f3-4b84-ac93-6f9b4fa91ce9"
     url = (
