@@ -156,7 +156,7 @@ def handle_shift():
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 시간범위: {shift_start}시~{shift_end}시\n" 
                 f"- 사전교대인원: {num_people or '-'}명\n"
-                f"- 사전교대순번: {my_order or '-'}번"
+                f"- 사전교대순번: {my_order or '-'}번\n"
                 f"- 메인교대순번: {shift_order}\n"
             )
         else:
@@ -165,7 +165,7 @@ def handle_shift():
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 시간범위: {shift_start}시~{shift_end}시\n"
                 f"- 사전교대인원: {num_people or '-'}명\n"
-                f"- 사전교대순번: {my_order or '-'}번"
+                f"- 사전교대순번: {my_order or '-'}번\n"
                 f"- 메인교대순번: {shift_order}\n"
                 f"- 추가작업: {info_map.get(task_type, task_type)}\n"             
             )
@@ -178,7 +178,7 @@ def handle_shift():
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 시간범위: {shift_start}시~{shift_end}시\n"
                 f"- 사전교대인원: {num_people or '-'}명\n"
-                f"- 사전교대순번: {my_order or '-'}번"
+                f"- 사전교대순번: {my_order or '-'}번\n"
                 f"- 선택한 교대시간: {times_str}\n"
             )
         else:
