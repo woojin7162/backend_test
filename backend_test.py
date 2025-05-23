@@ -55,7 +55,6 @@ def current_status():
         # outputInfo 생성
         shift_type = latest.get('shiftType')
         shift_order = latest.get('shiftOrder')
-        shift_time_range = latest.get('shiftTimeRange')
         task_type = latest.get('taskType')
         morning_times = latest.get('morningTimes', [])
         num_people = latest.get('numPeople')
@@ -71,7 +70,7 @@ def current_status():
         }
 
         if shift_type == "afternoon":
-            output_info = f"{info_map.get(shift_type, shift_type)}, 순번 {shift_order}, 시간대 {shift_time_range}"
+            output_info = f"{info_map.get(shift_type, shift_type)}, 순번 {shift_order}"
             if shift_order in ['1', '3']:
                 output_info += f", 추가 작업: {info_map.get(task_type, task_type)}"
         else:
@@ -112,7 +111,6 @@ def handle_shift():
     now = datetime.utcnow() + timedelta(hours=9)  # 한국시간, 워커도 동일하게 맞춰야 함
     shift_type = data['shiftType']
     shift_order = data['shiftOrder']
-    shift_time_range = data['shiftTimeRange']
     task_type = data['taskType']
     shift_start = data.get("shiftStart") or None
     shift_end = data.get("shiftEnd") or None
@@ -133,14 +131,14 @@ def handle_shift():
                 f"근무 시간 접수 완료\n"
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 순번: {shift_order}\n"
-                f"- 시간대: {shift_time_range}"
+                f"- 시간범위: {shift_start}시~{shift_end}시"
             )
         else:
             msg = (
                 f"근무 시간 접수 완료\n"
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 순번: {shift_order}\n"
-                f"- 시간대: {shift_time_range}\n"
+                f"- 시간범위: {shift_start}시~{shift_end}시\n"
                 f"- 추가작업: {info_map.get(task_type, task_type)}"
             )
     else:
@@ -150,6 +148,7 @@ def handle_shift():
             msg = (
                 f"근무 시간 접수 완료\n"
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
+                f"- 시간범위: {shift_start}시~{shift_end}시\n"
                 f"- 선택한 교대시간: {times_str}"
             )
         else:
@@ -167,7 +166,6 @@ def handle_shift():
             "sent_at": datetime.utcnow() + timedelta(hours=9),
             "shiftType": shift_type,
             "shiftOrder": shift_order,
-            "shiftTimeRange": shift_time_range,
             "shiftStart": shift_start,
             "shiftEnd": shift_end,
             "taskType": task_type,
@@ -211,24 +209,30 @@ def handle_shift():
             end_alarm = now.replace(hour=end_hour-1, minute=54, second=0, microsecond=0)
             save_scheduled_message(start_alarm, f"포스 시작 교대 시간입니다! (순번 {shift_order})번")
             save_scheduled_message(end_alarm, f"포스 종료 교대 시간입니다! 주차장을 확인해주세요! (순번 {shift_order})")
-        if shift_time_range == '2-4':
-            times = [
-                (1, 13, 55, 14, 35),
-                (2, 14, 35, 15, 15),
-                (3, 15, 15, 15, 55)
-            ]
-        else:
-            times = [
-                (1, 14, 55, 15, 15),
-                (2, 15, 15, 15, 35),
-                (3, 15, 35, 15, 55)
-            ]
-        for num, sh, sm, eh, em in times:
-            if str(num) == shift_order:
-                start = now.replace(hour=sh, minute=sm-1, second=0, microsecond=0)
-                end = now.replace(hour=eh, minute=em-1, second=0, microsecond=0)
-                save_scheduled_message(start, f"포스 시작 교대 시간입니다! ({sh}:{sm:02d}, 순번 {num})")
-                save_scheduled_message(end, f"포스 종료 교대 시간입니다! ({eh}:{em:02d}, 순번 {num})")
+        
+    if shift_start and shift_end and num_people and my_order:
+        try:
+            s = int(shift_start)
+            e = int(shift_end)
+            n = int(num_people)
+            order = int(my_order)
+            total_minutes = (e - s) * 60
+            if n > 0 and order > 0 and order <= n and total_minutes > 0:
+                slot_minutes = total_minutes // n
+                start_minute = s * 60 + slot_minutes * (order - 1)
+                end_minute = s * 60 + slot_minutes * order
+                start_hour = start_minute // 60
+                start_min = start_minute % 60
+                end_hour = end_minute // 60
+                end_min = end_minute % 60
+                # 알림 시간(시작/종료 6분 전)
+                start_alarm = now.replace(hour=start_hour, minute=(start_min-6)%60, second=0, microsecond=0)
+                end_alarm = now.replace(hour=end_hour, minute=(end_min-6)%60, second=0, microsecond=0)
+                save_scheduled_message(start_alarm, f"포스 시작 교대 시간입니다! (내 순번 {order})")
+                save_scheduled_message(end_alarm, f"포스 종료 교대 시간입니다! 주차장을 확인해주세요! (내 순번 {order})")
+        except Exception as ex:
+            print("shift_start~shift_end 교대 알림 예약 오류:", ex)
+
 
     if shift_order != '2':
         if task_type == 'recycling':
@@ -245,6 +249,8 @@ def handle_shift():
         leave_alarm = now.replace(hour=15, minute=0, second=0, microsecond=0)
         save_scheduled_message(leave_alarm, "퇴근! 수고하셨습니다!")
         print("받은 데이터:", data)
+
+
 
     return jsonify({
         'status': 'success',
