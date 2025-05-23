@@ -72,7 +72,7 @@ def current_status():
             f"근무유형: {info_map.get(shift_type, shift_type)}<br>"
             f"순번: {shift_order}<br>"
             )
-            output_info += f"사전교대인원: {num_people or '-'}명<br>사전교대순번: {my_order or '-'}번"
+            output_info += f"사전교대인원: {num_people or '-'}명<br>사전교대순번: {my_order or '-'}번<br>"
             if shift_start and shift_end:
                 output_info += f"시간범위: {shift_start}시~{shift_end}시<br>"
             if shift_order in ['1', '3']:
