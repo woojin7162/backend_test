@@ -30,7 +30,7 @@ def send_notilab_push(body):
     title = "교대근무 알리미"
     sckey = "89150194-88f3-4b84-ac93-6f9b4fa91ce9"
     url = (
-        "https://asia-northeast3-noti-lab-production.cloudfunctions.net/api//notification/v1/notification?"
+        "https://asia-northeast3-noti-lab-production.cloudfunctions.net/api/notification/v1/notification?"
         f"nickname={urllib.parse.quote(to_nickname)}"
         f"&title={urllib.parse.quote(title)}"
         f"&body={urllib.parse.quote(body)}"
