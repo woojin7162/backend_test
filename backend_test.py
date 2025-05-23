@@ -69,7 +69,7 @@ def current_status():
 
         if shift_type == "afternoon":
             output_info = (
-            f"{info_map.get(shift_type, shift_type)}<br>"
+            f"근무유형: {info_map.get(shift_type, shift_type)}<br>"
             f"순번: {shift_order}<br>"
             )
             if shift_start and shift_end:
