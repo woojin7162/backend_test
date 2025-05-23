@@ -104,7 +104,7 @@ def handle_shift():
         return response
 
     data = request.get_json()
-    required = ['shiftType', 'shiftOrder', 'shiftTimeRange', 'taskType']
+    required = ['shiftType', 'shiftOrder', 'taskType']
     if not all(k in data for k in required):
         return jsonify({'status': 'error', 'message': '필수 데이터 누락'}), 400
 
