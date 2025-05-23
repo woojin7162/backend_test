@@ -137,10 +137,10 @@ def handle_shift():
         if shift_order == "2":
             msg = (
                 f"근무 시간 접수 완료\n"
+                f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 사전교대인원: {num_people or '-'}명\n"
                 f"- 사전교대순번: {my_order or '-'}번"
-                f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
-                f"- 순번: {shift_order}\n"
+                f"- 메인교대순번: {shift_order}\n"
                 f"- 시간범위: {shift_start}시~{shift_end}시\n" 
             )
         else:
@@ -149,7 +149,7 @@ def handle_shift():
                 f"- 근무유형: {info_map.get(shift_type, shift_type)}\n"
                 f"- 사전교대인원: {num_people or '-'}명\n"
                 f"- 사전교대순번: {my_order or '-'}번"
-                f"- 순번: {shift_order}\n"
+                f"- 메인교대순번: {shift_order}\n"
                 f"- 시간범위: {shift_start}시~{shift_end}시\n"
                 f"- 추가작업: {info_map.get(task_type, task_type)}\n"             
             )
