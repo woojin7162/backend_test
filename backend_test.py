@@ -28,7 +28,7 @@ def send_discord_message(content):
     DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
     if not DISCORD_WEBHOOK_URL:
         print("웹훅 URL이 설정되지 않았습니다.")
-        return None
+        return
     payload = {
         "content": content,
         "username": "교대근무 알리미"
@@ -39,12 +39,8 @@ def send_discord_message(content):
             url += "?wait=true"
         resp = requests.post(url, json=payload, timeout=5)
         print("웹훅 응답:", resp.status_code, resp.text)
-        if resp.status_code == 200:
-            data = resp.json()
-            return data.get("id")  # 메시지 ID 반환
     except Exception as e:
         print("웹훅 전송 오류:", e)
-    return None
 
 @app.route('/current_status', methods=['GET'])
 def current_status():
@@ -177,10 +173,8 @@ def handle_shift():
                 f"- 사전교대인원: {num_people or '-'}명\n"
                 f"- 사전교대순번: {my_order or '-'}번"
             )
-    message_id = send_discord_message(msg)
-    if message_id:
-        collection.insert_one({
-            "discord_message_id": message_id,
+    send_discord_message(msg)
+    collection.insert_one({
             "sent_at": datetime.utcnow() + timedelta(hours=9),
             "shiftType": shift_type,
             "shiftOrder": shift_order,
