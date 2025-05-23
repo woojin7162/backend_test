@@ -30,8 +30,8 @@ def send_notilab_push(body):
     title = "교대근무 알리미"
     sckey = "89150194-88f3-4b84-ac93-6f9b4fa91ce9"
     url = (
-        "https://noti.kyulabs.app/send?"
-        f"to={urllib.parse.quote(to_nickname)}"
+        "https://asia-northeast3-noti-lab-production.cloudfunctions.net/api//notification/v1/notification?"
+        f"nickname={urllib.parse.quote(to_nickname)}"
         f"&title={urllib.parse.quote(title)}"
         f"&body={urllib.parse.quote(body)}"
         f"&secretKey={urllib.parse.quote(sckey)}"
@@ -72,7 +72,7 @@ def current_status():
             f"근무유형: {info_map.get(shift_type, shift_type)}<br>"
             f"순번: {shift_order}<br>"
             )
-            output_info += f"사전교대인원: {num_people or '-'}명<br>사전교대순번: {my_order or '-'}번<br>"
+            output_info += f"사전교대인원: {num_people or '-'}명<br>사전교대순번: {my_order or '-'}번"
             if shift_start and shift_end:
                 output_info += f"시간범위: {shift_start}시~{shift_end}시<br>"
             if shift_order in ['1', '3']:
