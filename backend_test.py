@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+\from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from datetime import datetime, timedelta
@@ -114,7 +114,7 @@ def handle_shift():
         return response
 
     data = request.get_json()
-    required = ['shiftType', 'shiftOrder', 'taskType']
+    required = ['shiftType', 'shiftOrder']
     if not all(k in data for k in required):
         return jsonify({'status': 'error', 'message': '필수 데이터 누락'}), 400
 
