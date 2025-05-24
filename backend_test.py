@@ -230,48 +230,36 @@ def handle_shift():
             shift_start = int(shift_start)
         except:
             return True
-        
         if shift_start < shift_end:
             return jsonify({
             'status': 'error',
             'warning': '교대 알림 예약이 실패했습니다. 교대시간을 확인해주세요.',
             'data': data
             }), 200
-
-
-        
-
-
-
-
-
-
-
-
-
-        try:
-            s = int(shift_start)
-            e = int(shift_end)
-            n = int(num_people)
-            order = int(my_order)
-            total_minutes = (e - s) * 60
-            if n > 0 and order > 0 and order <= n and total_minutes > 0:
-                slot_minutes = total_minutes // n
-                start_minute = s * 60 + slot_minutes * (order - 1)
-                end_minute = s * 60 + slot_minutes * order
+        else:
+            try:
+                s = int(shift_start)
+                e = int(shift_end)
+                n = int(num_people)
+                order = int(my_order)
+                total_minutes = (e - s) * 60
+                if n > 0 and order > 0 and order <= n and total_minutes > 0:
+                    slot_minutes = total_minutes // n
+                    start_minute = s * 60 + slot_minutes * (order - 1)
+                    end_minute = s * 60 + slot_minutes * order
             # 알림 시간(시작/종료 6분 전)
-                start_alarm_minute = start_minute - 6
-                end_alarm_minute = end_minute - 6
-                start_alarm_hour = start_alarm_minute // 60
-                start_alarm_min = start_alarm_minute % 60
-                end_alarm_hour = end_alarm_minute // 60
-                end_alarm_min = end_alarm_minute % 60
-                start_alarm = now.replace(hour=start_alarm_hour, minute=start_alarm_min, second=0, microsecond=0)
-                end_alarm = now.replace(hour=end_alarm_hour, minute=end_alarm_min, second=0, microsecond=0)
-                save_scheduled_message(start_alarm, f"포스 시작 교대 시간입니다! (내 순번 {order})")
-                save_scheduled_message(end_alarm, f"포스 종료 교대 시간입니다! 주차장을 확인해주세요! (내 순번 {order})")
-        except Exception as ex:
-            print("shift_start~shift_end 교대 알림 예약 오류:", ex)
+                    start_alarm_minute = start_minute - 6
+                    end_alarm_minute = end_minute - 6
+                    start_alarm_hour = start_alarm_minute // 60
+                    start_alarm_min = start_alarm_minute % 60
+                    end_alarm_hour = end_alarm_minute // 60
+                    end_alarm_min = end_alarm_minute % 60
+                    start_alarm = now.replace(hour=start_alarm_hour, minute=start_alarm_min, second=0, microsecond=0)
+                    end_alarm = now.replace(hour=end_alarm_hour, minute=end_alarm_min, second=0, microsecond=0)
+                    save_scheduled_message(start_alarm, f"포스 시작 교대 시간입니다! (내 순번 {order})")
+                    save_scheduled_message(end_alarm, f"포스 종료 교대 시간입니다! 주차장을 확인해주세요! (내 순번 {order})")
+            except Exception as ex:
+                print("shift_start~shift_end 교대 알림 예약 오류:", ex)
 
 
     if shift_order != '2':
