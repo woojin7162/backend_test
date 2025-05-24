@@ -226,6 +226,30 @@ def handle_shift():
         
     if shift_start and shift_end and num_people and my_order:
         try:
+            shift_end = int(shift_end)
+            shift_start = int(shift_start)
+        except:
+            return True
+        
+        if shift_start < shift_end:
+            return jsonify({
+            'status': 'error',
+            'warning': '교대 알림 예약이 실패했습니다. 교대시간을 확인해주세요.',
+            'data': data
+            }), 200
+
+
+        
+
+
+
+
+
+
+
+
+
+        try:
             s = int(shift_start)
             e = int(shift_end)
             n = int(num_people)
