@@ -121,7 +121,7 @@ def handle_shift():
     now = datetime.utcnow() + timedelta(hours=9)  # 한국시간, 워커도 동일하게 맞춰야 함
     shift_type = data['shiftType']
     shift_order = data['shiftOrder']
-    task_type = data('taskType') or None
+    task_type = data.get('taskType') or None
     shift_start = data.get("shiftStart") or None
     shift_end = data.get("shiftEnd") or None
     num_people = data.get("numPeople") or None
