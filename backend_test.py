@@ -127,6 +127,14 @@ def handle_shift():
     num_people = data.get("numPeople") or None
     my_order = data.get("myOrder") or None
 
+    field_kor = {
+    "shiftStart": "교대 시작시간",
+    "shiftEnd": "교대 종료시간",
+    "numPeople": "사전교대 인원",
+    "myOrder": "사전교대 순번"
+    }
+
+
     missing_fields = []
     if not shift_start:
         missing_fields.append("shiftStart")
@@ -147,9 +155,10 @@ def handle_shift():
         }), 200
     # 1~3개만 없으면 warning 메시지
         else:
+            missing_kor = [field_kor[f] for f in missing_fields]
             return jsonify({
             'status': 'error',
-            'warning': f"필수 교대 정보({', '.join(missing_fields)})가 누락되어 예약이 실행되지 않았습니다.",
+            'warning': f"필수 교대 정보({', '.join(missing_kor)})가 누락되어 예약이 실행되지 않았습니다.",
             'data': data
         }), 200
 
