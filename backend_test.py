@@ -127,10 +127,29 @@ def handle_shift():
     num_people = data.get("numPeople") or None
     my_order = data.get("myOrder") or None
 
-    if not (shift_start and shift_end and num_people and my_order):
-        return jsonify({
+    missing_fields = []
+    if not shift_start:
+        missing_fields.append("shiftStart")
+    if not shift_end:
+        missing_fields.append("shiftEnd")
+    if not num_people:
+        missing_fields.append("numPeople")
+    if not my_order:
+        missing_fields.append("myOrder")
+
+    if missing_fields:
+    # 4개 모두 없으면 그냥 성공 메시지
+        if len(missing_fields) == 4:
+            return jsonify({
             'status': 'success',
             'message': '필수 교대 정보가 없어 예약 프로세스는 실행되지 않았습니다.',
+            'data': data
+        }), 200
+    # 1~3개만 없으면 warning 메시지
+        else:
+            return jsonify({
+            'status': 'error',
+            'warning': f"필수 교대 정보({', '.join(missing_fields)})가 누락되어 예약이 실행되지 않았습니다.",
             'data': data
         }), 200
 
