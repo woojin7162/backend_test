@@ -128,10 +128,10 @@ def handle_shift():
     my_order = data.get("myOrder") or None
 
     field_kor = {
-    "shiftStart": "교대 시작시간",
-    "shiftEnd": "교대 종료시간",
-    "numPeople": "사전교대 인원",
-    "myOrder": "사전교대 순번"
+    "shiftStart": "교대 시작 시간",
+    "shiftEnd": "교대 종료 시간",
+    "numPeople": "사전 교대 인원",
+    "myOrder": "사전 교대 순번"
     }
 
 
