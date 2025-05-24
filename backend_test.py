@@ -142,7 +142,7 @@ def handle_shift():
             order = int(my_order)
         except:
             return True
-        if s < e:
+        if s > e:
             return jsonify({
                 'status': 'error',
                 'warning': '교대 알림 예약이 실패했습니다. 교대시간을 확인해주세요.',
