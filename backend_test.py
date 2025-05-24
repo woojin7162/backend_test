@@ -148,11 +148,7 @@ def handle_shift():
     if missing_fields:
     # 4개 모두 없으면 그냥 성공 메시지
         if len(missing_fields) == 4:
-            return jsonify({
-            'status': 'success',
-            'message': '필수 교대 정보가 없어 예약 프로세스는 실행되지 않았습니다.',
-            'data': data
-        }), 200
+            print("사전교대는 진행하지 않음")
     # 1~3개만 없으면 warning 메시지
         else:
             missing_kor = [field_kor[f] for f in missing_fields]
